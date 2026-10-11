@@ -6,7 +6,7 @@ Express + TypeScript + MongoDB (Mongoose) backend for a note-taking app with JWT
 
 ```bash
 npm install
-cp .env.example .env      # then set JWT_SECRET and MONGODB_URI
+cp .env.example .env      # then set the JWT secrets and MONGODB_URI
 npm run seed:admin        # creates the admin account from ADMIN_* in .env
 npm run dev
 ```
@@ -29,15 +29,28 @@ src/
 
 Each module has its own `model`, `validation`, `service`, `controller` and `routes` file.
 
+## Authentication
+
+- `register` / `login` return a short-lived **access token** (15 min) in the response body and set a
+  **refresh token** (7 days) as an `httpOnly` cookie scoped to `/api/v1/auth`.
+- Send the access token as `Authorization: Bearer <token>`. When it expires, call `POST /auth/refresh`
+  (with credentials) to get a new one.
+- Each user has a `tokenVersion` that is stored in both tokens. Logout, a password change or an admin
+  resetting the password bumps it, which invalidates every token issued before.
+- Login and register are rate limited to 10 requests per 15 minutes per IP.
+
 ## Endpoints
 
-All routes except `/auth/*` and `/health` need `Authorization: Bearer <token>`.
+All routes except `/health` and the public auth routes need `Authorization: Bearer <access token>`.
 List endpoints accept `?page=1&limit=10` (max 100).
 
 | Method | Route | Access |
 | --- | --- | --- |
 | POST | `/auth/register` | public |
 | POST | `/auth/login` | public |
+| POST | `/auth/refresh` | refresh cookie |
+| POST | `/auth/logout` | refresh cookie |
+| PATCH | `/auth/password` | user |
 | GET / PATCH | `/users/me` | user |
 | GET / POST | `/users` | admin |
 | GET / PATCH / DELETE | `/users/:id` | admin |
