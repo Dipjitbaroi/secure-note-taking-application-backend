@@ -40,3 +40,6 @@ export async function logout(req: Request, res: Response) {
   res.status(204).end();
 }
 
+export async function changePassword(req: Request, res: Response) {
+  sendAuth(res, 200, await authService.changePassword(req.user!.id, req.body));
+}

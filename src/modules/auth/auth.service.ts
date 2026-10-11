@@ -4,7 +4,7 @@ import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../../com
 import { comparePassword, hashPassword } from '../../common/utils/password';
 import { User } from '../users/user.model';
 import { createUser } from '../users/user.service';
-import type { LoginInput, RegisterInput } from './auth.validation';
+import type { ChangePasswordInput, LoginInput, RegisterInput } from './auth.validation';
 
 // Compared against when the email doesn't exist, so a login for an unknown
 // email takes about as long as one with a wrong password.
@@ -58,3 +58,18 @@ export async function logout(refreshToken: string | undefined) {
   }
 }
 
+export async function changePassword(userId: string, input: ChangePasswordInput) {
+  const user = await User.findById(userId).select('+password +tokenVersion');
+  if (!user) throw ApiError.notFound('User not found');
+
+  if (!(await comparePassword(input.currentPassword, user.password))) {
+    throw ApiError.badRequest('Current password is incorrect');
+  }
+
+  user.password = await hashPassword(input.newPassword);
+  user.tokenVersion += 1;
+  await user.save();
+
+  // other sessions are now invalid; hand this one fresh tokens so it stays logged in
+  return issueTokens(user);
+}

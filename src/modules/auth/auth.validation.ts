@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createUserSchema } from '../users/user.validation';
+import { createUserSchema, password } from '../users/user.validation';
 
 // Public sign-up always creates a normal user — role can't be chosen here.
 export const registerSchema = createUserSchema.omit({ role: true });
@@ -9,5 +9,16 @@ export const loginSchema = z.object({
   password: z.string().min(1),
 });
 
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1),
+    newPassword: password,
+  })
+  .refine((v) => v.currentPassword !== v.newPassword, {
+    message: 'New password must be different from the current one',
+    path: ['newPassword'],
+  });
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
