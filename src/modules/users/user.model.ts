@@ -8,6 +8,8 @@ const userSchema = new Schema(
     password: { type: String, required: true, select: false },
     role: { type: String, enum: ROLES, default: 'user' },
     interests: { type: [String], default: [] },
+    // Bumped on logout / password change; tokens carrying an older version are rejected.
+    tokenVersion: { type: Number, default: 0, select: false },
   },
   { timestamps: true, versionKey: false },
 );
@@ -26,6 +28,7 @@ userSchema.index({ interests: 1 });
 userSchema.set('toJSON', {
   transform: (_doc, ret: Record<string, unknown>) => {
     delete ret.password;
+    delete ret.tokenVersion;
     return ret;
   },
 });

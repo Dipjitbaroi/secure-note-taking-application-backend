@@ -31,9 +31,11 @@ export async function getUserById(id: string) {
 }
 
 export async function updateUser(id: string, input: UpdateUserInput | UpdateProfileInput) {
-  const update = { ...input };
-  if ('password' in update && update.password) {
-    update.password = await hashPassword(update.password);
+  const update: Record<string, unknown> = { ...input };
+  if ('password' in input && input.password) {
+    update.password = await hashPassword(input.password);
+    // a password reset by an admin should sign the user out everywhere
+    update.$inc = { tokenVersion: 1 };
   }
 
   const user = await User.findByIdAndUpdate(id, update, {
