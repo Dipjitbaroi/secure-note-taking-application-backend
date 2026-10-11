@@ -6,8 +6,8 @@ const REFRESH_COOKIE = 'refreshToken';
 
 const refreshCookieOptions: CookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: 'strict',
+  secure: env.NODE_ENV === 'production' || env.COOKIE_SAME_SITE === 'none',
+  sameSite: env.COOKIE_SAME_SITE,
   path: '/api/v1/auth',
   maxAge: env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
 };
