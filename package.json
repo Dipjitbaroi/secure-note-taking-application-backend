@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "seed:admin": "tsx src/scripts/seed-admin.ts",
     "seed:admin:prod": "node dist/scripts/seed-admin.js",
-    "deploy": "npm run build && vercel deploy --prod"
+    "deploy": "vercel deploy --prod"
   },
   "repository": {
     "type": "git",
