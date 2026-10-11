@@ -21,7 +21,13 @@ async function main() {
   process.on('SIGTERM', () => shutdown('SIGTERM'));
 }
 
-main().catch((err) => {
-  console.error('Failed to start server', err);
-  process.exit(1);
-});
+// On Vercel the platform calls the exported app for each request,
+// so only start a long-running server everywhere else.
+if (!process.env.VERCEL) {
+  main().catch((err) => {
+    console.error('Failed to start server', err);
+    process.exit(1);
+  });
+}
+
+export default app;
