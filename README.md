@@ -31,8 +31,10 @@ Each module has its own `model`, `validation`, `service`, `controller` and `rout
 
 ## Authentication
 
-- `register` / `login` return a short-lived **access token** (15 min) in the response body and set a
-  **refresh token** (7 days) as an `httpOnly` cookie scoped to `/api/v1/auth`.
+- `register` / `login` return a short-lived **access token** (15 min) and a **refresh token** (7 days)
+  in the response body. The refresh token is also set as an `httpOnly` cookie scoped to `/api/v1/auth`.
+- `POST /auth/refresh` and `POST /auth/logout` read the refresh token from the cookie, or from
+  `{ "refreshToken": "..." }` in the body for clients that don't use cookies (Postman, mobile).
 - Send the access token as `Authorization: Bearer <token>`. When it expires, call `POST /auth/refresh`
   (with credentials) to get a new one.
 - Each user has a `tokenVersion` that is stored in both tokens. Logout, a password change or an admin

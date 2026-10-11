@@ -19,6 +19,12 @@ export const changePasswordSchema = z
     path: ['newPassword'],
   });
 
+// For clients that can't use the cookie (Postman, mobile, another domain).
+// The cookie still takes priority when both are present.
+export const refreshTokenSchema = z
+  .object({ refreshToken: z.string().min(1).optional() })
+  .default({});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
