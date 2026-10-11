@@ -11,7 +11,7 @@ npm run seed:admin        # creates the admin account from ADMIN_* in .env
 npm run dev
 ```
 
-API base URL: `http://localhost:5000/api/v1`
+API base URL: `http://localhost:4000/api/v1`
 
 ## Structure
 

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  PORT: z.coerce.number().int().positive().default(5000),
+  PORT: z.coerce.number().int().positive().default(4000),
   MONGODB_URI: z.string().min(1),
   JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET should be at least 32 characters'),
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET should be at least 32 characters'),
