@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ROLES } from '../../common/types/role';
+import { paginationQuery } from '../../common/utils/pagination';
 
 const interests = z
   .array(z.string().trim().toLowerCase().min(1).max(50))
@@ -31,6 +32,11 @@ export const updateProfileSchema = z
   .partial()
   .refine((v) => Object.keys(v).length > 0, 'Nothing to update');
 
+export const interestGroupsQuery = paginationQuery.extend({
+  interest: z.string().trim().toLowerCase().min(1).optional(),
+});
+
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type InterestGroupsQuery = z.infer<typeof interestGroupsQuery>;

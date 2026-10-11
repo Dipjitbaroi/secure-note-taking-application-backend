@@ -5,7 +5,12 @@ import { validate } from '../../common/middlewares/validate';
 import { idParam } from '../../common/utils/objectId';
 import { paginationQuery } from '../../common/utils/pagination';
 import * as userController from './user.controller';
-import { createUserSchema, updateProfileSchema, updateUserSchema } from './user.validation';
+import {
+  createUserSchema,
+  interestGroupsQuery,
+  updateProfileSchema,
+  updateUserSchema,
+} from './user.validation';
 
 const router = Router();
 
@@ -15,6 +20,12 @@ router.get('/me', userController.getMe);
 router.patch('/me', validate({ body: updateProfileSchema }), userController.updateMe);
 
 router.use(authorize('admin'));
+
+router.get(
+  '/interests',
+  validate({ query: interestGroupsQuery }),
+  userController.groupByInterest,
+);
 
 router
   .route('/')

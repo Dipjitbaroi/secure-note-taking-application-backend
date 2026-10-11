@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import type { PaginationQuery } from '../../common/utils/pagination';
 import * as userService from './user.service';
+import type { InterestGroupsQuery } from './user.validation';
 
 export async function getMe(req: Request, res: Response) {
   res.json({ success: true, data: await userService.getUserById(req.user!.id) });
@@ -31,4 +32,9 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   await userService.deleteUser(req.params.id as string, req.user!.id);
   res.status(204).end();
+}
+
+export async function groupByInterest(req: Request, res: Response) {
+  const query = req.query as unknown as InterestGroupsQuery;
+  res.json({ success: true, data: await userService.groupUsersByInterest(query) });
 }
