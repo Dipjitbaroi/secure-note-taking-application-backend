@@ -1,5 +1,5 @@
 import rateLimit from 'express-rate-limit';
-import { ApiError } from '../utils/ApiError';
+import * as httpError from '../utils/httpError';
 
 // Slows down password guessing and sign-up spam: 10 attempts per IP every 15 minutes.
 export const authLimiter = rateLimit({
@@ -8,6 +8,6 @@ export const authLimiter = rateLimit({
   standardHeaders: 'draft-8',
   legacyHeaders: false,
   handler: (_req, _res, next) => {
-    next(new ApiError(429, 'Too many attempts, please try again later'));
+    next(httpError.tooManyRequests('Too many attempts, please try again later'));
   },
 });

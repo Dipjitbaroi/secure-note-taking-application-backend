@@ -1,5 +1,5 @@
 import type { Role } from '../../common/types/role';
-import { ApiError } from '../../common/utils/ApiError';
+import * as httpError from '../../common/utils/httpError';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../../common/utils/jwt';
 import { comparePassword, hashPassword } from '../../common/utils/password';
 import { User } from '../users/user.model';
@@ -28,18 +28,18 @@ export async function login({ email, password }: LoginInput) {
   const user = await User.findOne({ email }).select('+password +tokenVersion');
 
   const valid = await comparePassword(password, user?.password ?? (await dummyHash));
-  if (!user || !valid) throw ApiError.unauthorized('Invalid email or password');
+  if (!user || !valid) throw httpError.unauthorized('Invalid email or password');
 
   return { user: user.toJSON(), ...issueTokens(user) };
 }
 
 export async function refresh(refreshToken: string | undefined) {
-  if (!refreshToken) throw ApiError.unauthorized('Missing refresh token');
+  if (!refreshToken) throw httpError.unauthorized('Missing refresh token');
 
   const payload = verifyRefreshToken(refreshToken);
   const user = await User.findById(payload.sub).select('+tokenVersion').lean();
   if (!user || user.tokenVersion !== payload.tv) {
-    throw ApiError.unauthorized('Session expired, please log in again');
+    throw httpError.unauthorized('Session expired, please log in again');
   }
 
   const { tokenVersion: _tv, ...publicUser } = user;
@@ -60,10 +60,10 @@ export async function logout(refreshToken: string | undefined) {
 
 export async function changePassword(userId: string, input: ChangePasswordInput) {
   const user = await User.findById(userId).select('+password +tokenVersion');
-  if (!user) throw ApiError.notFound('User not found');
+  if (!user) throw httpError.notFound('User not found');
 
   if (!(await comparePassword(input.currentPassword, user.password))) {
-    throw ApiError.badRequest('Current password is incorrect');
+    throw httpError.badRequest('Current password is incorrect');
   }
 
   user.password = await hashPassword(input.newPassword);

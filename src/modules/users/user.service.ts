@@ -1,4 +1,4 @@
-import { ApiError } from '../../common/utils/ApiError';
+import * as httpError from '../../common/utils/httpError';
 import { getSkip, paginated, type PaginationQuery } from '../../common/utils/pagination';
 import { hashPassword } from '../../common/utils/password';
 import { Note } from '../notes/note.model';
@@ -26,7 +26,7 @@ export async function listUsers(query: PaginationQuery) {
 
 export async function getUserById(id: string) {
   const user = await User.findById(id).lean();
-  if (!user) throw ApiError.notFound('User not found');
+  if (!user) throw httpError.notFound('User not found');
   return user;
 }
 
@@ -42,15 +42,15 @@ export async function updateUser(id: string, input: UpdateUserInput | UpdateProf
     returnDocument: 'after',
     runValidators: true,
   }).lean();
-  if (!user) throw ApiError.notFound('User not found');
+  if (!user) throw httpError.notFound('User not found');
   return user;
 }
 
 export async function deleteUser(id: string, requesterId: string) {
-  if (id === requesterId) throw ApiError.badRequest('You cannot delete your own account');
+  if (id === requesterId) throw httpError.badRequest('You cannot delete your own account');
 
   const user = await User.findByIdAndDelete(id).lean();
-  if (!user) throw ApiError.notFound('User not found');
+  if (!user) throw httpError.notFound('User not found');
 
   // Both deletes use the leading `owner` / `author` field of their compound indexes.
   await Promise.all([Note.deleteMany({ owner: user._id }), Post.deleteMany({ author: user._id })]);

@@ -3,10 +3,10 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import { ZodError, z } from 'zod';
 import { env } from '../../config/env';
-import { ApiError } from '../utils/ApiError';
+import * as httpError from '../utils/httpError';
 
 export const notFound: RequestHandler = (req, _res, next) => {
-  next(ApiError.notFound(`Route not found: ${req.method} ${req.originalUrl}`));
+  next(httpError.notFound(`Route not found: ${req.method} ${req.originalUrl}`));
 };
 
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
@@ -14,7 +14,7 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   let message = 'Internal server error';
   let details: unknown;
 
-  if (err instanceof ApiError) {
+  if (httpError.isHttpError(err)) {
     status = err.statusCode;
     message = err.message;
     details = err.details;

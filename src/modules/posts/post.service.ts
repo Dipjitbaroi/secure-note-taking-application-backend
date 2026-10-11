@@ -1,4 +1,4 @@
-import { ApiError } from '../../common/utils/ApiError';
+import * as httpError from '../../common/utils/httpError';
 import { toObjectId } from '../../common/utils/objectId';
 import { getSkip, paginated, type PaginationQuery } from '../../common/utils/pagination';
 import type { Role } from '../../common/types/role';
@@ -26,7 +26,7 @@ export async function listPosts(query: PaginationQuery) {
 
 export async function getPost(id: string) {
   const post = await Post.findById(id).populate('author', 'name').lean();
-  if (!post) throw ApiError.notFound('Post not found');
+  if (!post) throw httpError.notFound('Post not found');
   return post;
 }
 
@@ -65,7 +65,7 @@ export async function getPostsByUser(userId: string, query: PaginationQuery) {
     },
   ]);
 
-  if (!user) throw ApiError.notFound('User not found');
+  if (!user) throw httpError.notFound('User not found');
 
   const { items, total } = user.posts[0];
   return {
@@ -79,7 +79,7 @@ export async function updatePost(id: string, authorId: string, input: UpdatePost
     returnDocument: 'after',
     runValidators: true,
   }).lean();
-  if (!post) throw ApiError.notFound('Post not found');
+  if (!post) throw httpError.notFound('Post not found');
   return post;
 }
 
@@ -87,5 +87,5 @@ export async function updatePost(id: string, authorId: string, input: UpdatePost
 export async function deletePost(id: string, requester: { id: string; role: Role }) {
   const filter = requester.role === 'admin' ? { _id: id } : { _id: id, author: requester.id };
   const post = await Post.findOneAndDelete(filter).lean();
-  if (!post) throw ApiError.notFound('Post not found');
+  if (!post) throw httpError.notFound('Post not found');
 }

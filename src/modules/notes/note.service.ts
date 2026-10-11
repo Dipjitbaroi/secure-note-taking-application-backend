@@ -1,4 +1,4 @@
-import { ApiError } from '../../common/utils/ApiError';
+import * as httpError from '../../common/utils/httpError';
 import { getSkip, paginated, type PaginationQuery } from '../../common/utils/pagination';
 import type { Role } from '../../common/types/role';
 import { Note } from './note.model';
@@ -36,7 +36,7 @@ export async function getNote(id: string, requester: { id: string; role: Role })
   const note = await Note.findById(id).lean();
   // 404 rather than 403 so other users can't probe which note ids exist
   if (!note || (requester.role !== 'admin' && String(note.owner) !== requester.id)) {
-    throw ApiError.notFound('Note not found');
+    throw httpError.notFound('Note not found');
   }
   return note;
 }
@@ -47,11 +47,11 @@ export async function updateNote(id: string, ownerId: string, input: UpdateNoteI
     returnDocument: 'after',
     runValidators: true,
   }).lean();
-  if (!note) throw ApiError.notFound('Note not found');
+  if (!note) throw httpError.notFound('Note not found');
   return note;
 }
 
 export async function deleteNote(id: string, ownerId: string) {
   const note = await Note.findOneAndDelete({ _id: id, owner: ownerId }).lean();
-  if (!note) throw ApiError.notFound('Note not found');
+  if (!note) throw httpError.notFound('Note not found');
 }
