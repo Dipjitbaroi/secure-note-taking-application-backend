@@ -19,6 +19,14 @@ The project is split into two repositories:
 | API base URL | https://secure-note-taking-application-back.vercel.app/api/v1 |
 | Health check | https://secure-note-taking-application-back.vercel.app/api/v1/health |
 
+### Demo account
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@example.com` | `Admin@12345` |
+
+The login page also has a **Use demo admin** button. To try the normal user role, sign up with any email.
+
 ## Screenshots
 
 | | |
